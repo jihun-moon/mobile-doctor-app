@@ -7,7 +7,7 @@
 - Key topics: LBS, Offline-first, Reliability patterns, Encryption
 
 ## Demo
-![App demo](assets/mobile-doctor-demo.gif)
+![App demo](assets/mobile-doctor-demo.gif){width=50%}
 
 ## Features
 - 근거리 병원 검색: 반경, 전문과 필터
