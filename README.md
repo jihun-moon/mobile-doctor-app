@@ -1,62 +1,81 @@
-# 🏆 [프로젝트] 개인 맞춤형 의료 정보 관리 앱 '모바일 닥터'
+# Mobile Doctor App
 
-- **프로젝트 기간:** 8주
-- **팀명:** 문박도전
-- **사용 기술:** `Java`, `Android Studio`, `XML`, `Git`
+위치 기반 병원 검색과 진료 기록 관리를 위한 모바일 앱. 오프라인 캐시와 센서 융합으로 위치 정밀도를 높이고, API 쿼터·네트워크 오류 상황에서 요청 큐·백오프·리트라이·서킷 브레이커를 적용해 신뢰성을 확보했습니다.
 
----
+- Platform: Android
+- Language: Kotlin or Java
+- Key topics: LBS, Offline-first, Reliability patterns, Encryption
 
-## 🌟 주요 성과: 3개 부문 우수 프로젝트 선정
+## Demo
+![App demo](assets/mobile-doctor-demo.gif)
 
-본 프로젝트는 기말 프로젝트 평가에서 아래 3개 부문 모두 높은 평가를 받으며 그 완성도를 공식적으로 인정받아 **우수 프로젝트로 선정**되었습니다.
--   **UI/UX 부문: 공동 1위**
--   **완성도 부문: 공동 1위**
--   **주제 차별성 부문: 공동 2위**
+## Features
+- 근거리 병원 검색: 반경, 전문과 필터
+- 진료 기록 요약, 즐겨찾기, 오프라인 조회
+- 요청 큐 + 지수 백오프 리트라이, 서킷 브레이커
+- 민감 데이터 암호화, 지표 기반 모니터링
 
----
+## Architecture
+- Presentation: Activity/Fragment + ViewModel + ViewBinding
+- Data: Repository + Local(오프라인 캐시) + Remote(API)
+- Reliability: Retry with backoff, Circuit Breaker, Request Queue
+- Security: 암호화 저장소(예: EncryptedSharedPreferences)
 
-## 📌 프로젝트 목표
+## Getting Started
+1. Android Studio 최신 버전 설치
+2. Clone
+   - git clone <repo-url>
+3. Open and Run
+   - app 모듈 실행
+4. 환경 변수
+   - local.properties 또는 BuildConfig로 API 키 주입
 
-자신의 진료 기록을 관리하고, 사용자 위치 기반으로 가장 가까운 병원과 약국을 찾아주며, 실시간 약품 재고 현황까지 확인할 수 있는 개인 맞춤형 통합 의료 정보 플랫폼을 개발합니다.
+## Example (Retry + Backoff)
+```kotlin
+suspend fun <T> retryWithBackoff(
+    max: Int = 3,
+    baseMs: Long = 300L,
+    block: suspend () -> T
+): T {
+    var attempt = 0
+    var delayMs = baseMs
+    while (true) {
+        try { return block() }
+        catch (e: IOException) { /* 네트워크 등 일시 오류 */ }
+        if (++attempt >= max) throw e
+        delay(delayMs)
+        delayMs *= 2 // 지수 백오프
+    }
+}
+```
 
-*(앱에 사용된 모든 데이터는 기능 구현을 위한 가상 데이터(Virtual Data)를 사용했습니다.)*
+## Offline Cache
+- Room/SQLite로 최근 검색 결과와 즐겨찾기 저장
+- 캐시 만료 정책과 동기화 트리거 분리
 
----
+## Folder Structure
+```
+/assets/                        # README 이미지 (mobile-doctor-demo.gif 등)
+/app/src/main/java/...         # 소스
+/app/src/main/res/...          # 레이아웃/리소스
+README.md
+```
 
-## 🛠️ 나의 역할: UI/UX 설계 및 안드로이드 클라이언트 개발
+## Checklist
+- [ ] 위치 권한/정밀도 설정 가이던스
+- [ ] 오프라인 캐시 만료·동기화 정책 문서화
+- [ ] 에러 코드별 리트라이/중단 규칙 분리
+- [ ] 암호화 저장·전송(HTTPS/Pinning 옵션) 점검
+- [ ] UI 스레드 규칙·린트·테스트 통과
 
-저는 팀의 **안드로이드 개발자**로서, 사용자가 직접 상호작용하는 모든 클라이언트 화면의 UI/UX 설계와 핵심 기능 구현을 총괄했습니다. **UI/UX 부문 공동 1위**라는 성과는 저의 이러한 노력이 직접적으로 기여한 결과입니다.
+## Troubleshooting
+- 위치 값 튀는 현상: 센서 융합 파라미터/필터 조정
+- 쿼터 초과: 서버 응답 코드별 쿼터 대기 + 사용자 알림
+- 느린 시작: 캐시 프리워밍 및 비동기 초기화
 
-### 1. `RecyclerView`를 활용한 동적 기록 조회 기능 구현
-- **문제:** 사용자의 병원 이용 기록은 개수가 유동적이므로 정적 UI로는 표현이 불가능했습니다.
-- **해결:** `RecyclerView`와 `CustomAdapter`를 직접 구현하여, 조회된 가상 데이터의 양에 따라 아이템 뷰(Item View)가 동적으로 생성되도록 설계했습니다. 이를 통해 수많은 기록도 메모리 누수 없이 효율적으로 사용자에게 보여줄 수 있었습니다.
+## Links
+- Notion Page: Mobile Doctor App[[1]](https://www.notion.so/f8e8f6e415dd40f795f80c830003c1c4)
+- GitHub Repo: https://github.com/jihun-moon/mobile-doctor-app
 
-### 2. `Intent`를 활용한 컴포넌트 간 데이터 흐름 설계
-- **문제:** 여러 `Activity`가 분리되어 있어, 검색어와 같은 사용자 데이터를 화면 전환 시에도 유지하고 전달해야 했습니다.
-- **해결:** `Intent`의 `putExtra()` 메소드를 사용해 Fullscreen 검색창에서 입력된 검색어를 지도 `Activity`로 전달하는 데이터 흐름을 설계했습니다. 또한, `startActivityForResult()`를 활용하여 특정 화면의 결과 값을 이전 화면으로 다시 받아오는 양방향 통신 로직을 구현했습니다.
-
-### 3. 사용자 경험(UX)을 극대화한 UI 설계
-- **기여:** 검색 아이콘 클릭 시 **별도의 전체 화면(`FullscreenSearchActivity`)으로 전환**되는 인터랙션을 직접 제안하고 구현했습니다. 이는 사용자가 다른 UI 요소에 방해받지 않고 온전히 검색에만 집중할 수 있는 환경을 제공했으며, **UI/UX 부문 1위 수상**에 핵심적인 역할을 했습니다.
-- **구현:** `ConstraintLayout`을 주력으로 사용하여 복잡한 병원 정보 UI를 기기 해상도에 상관없이 일관되게 표현되도록 설계했습니다.
-
-### 4. 가상 데이터 기반 실시간 재고 확인 기능 개발
-- 지도 위 약국 마커 클릭 시, 해당 약국의 재고 상태(재고 있음, 매진, 정보 없음)를 **실시간으로 시뮬레이션**하여 각기 다른 UI(색상, 아이콘)로 표시하는 기능을 구현했습니다. 이는 실제 API 연동을 대비한 견고한 클라이언트 로직 설계 경험이 되었습니다.
-
----
-
-## 🌱 성장 및 핵심 경험 (Growth & Takeaways)
-
-이 프로젝트를 통해 `Activity`, `Intent`, `RecyclerView` 등 **안드로이드의 핵심 컴포넌트를 실제 문제 해결에 적용**하여, 기능적으로 풍부하고 사용자 중심적인 애플리케이션을 구축하는 실무 역량을 길렀습니다. 기획 단계부터 개발, 최종 발표까지 **팀원들과의 지속적인 소통과 협업**을 통해 하나의 완성된 애플리케이션을 만들어내며 소프트웨어 개발의 전체 생명주기를 경험했습니다.
-
----
-
-## 🎬 Demo
-
-<p align="left">
-  <img src="./assets/mobile-doctor-demo.gif" alt="모바일 닥터 앱 시연 GIF" width="300"/>
-  <br/>
-  <i>'모바일 닥터' 앱 핵심 기능 시연 GIF</i>
-</p>
-
----
-> ↩️ **[전체 학습 아카이브로 돌아가기](https://github.com/jihun-moon/daegu-univ-cs)**
+## License
+MIT 또는 프로젝트 정책에 맞는 라이선스 명시
