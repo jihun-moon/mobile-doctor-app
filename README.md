@@ -1,81 +1,73 @@
-# Mobile Doctor App
+# 🩺 Mobile Doctor | Android App
 
-위치 기반 병원 검색과 진료 기록 관리를 위한 모바일 앱. 오프라인 캐시와 센서 융합으로 위치 정밀도를 높이고, API 쿼터·네트워크 오류 상황에서 요청 큐·백오프·리트라이·서킷 브레이커를 적용해 신뢰성을 확보했습니다.
+> ### 3줄 요약
+>
+>   - **종합 의료 정보 앱**: 위치 기반 병원/약국 정보, 증상별 의약품 검색, 개인의 병원 방문 기록 관리 기능을 제공하는 안드로이드 앱입니다.
+>   - **핵심 기술**: Google Maps/Places SDK, 로컬 SQLite 데이터베이스, `RecyclerView`를 기반으로 제작되었습니다.
+>   - **사용자 중심 설계**: 접근성 강화를 위한 전역 글자 확대 및 화면 밝기 조절 기능과, 사용자의 최근 활동을 분석하여 맞춤형 건강 코멘트를 제공합니다.
 
-- Platform: Android
-- Language: Kotlin or Java
-- Key topics: LBS, Offline-first, Reliability patterns, Encryption
+-----
 
-## Demo
-<img src="assets/mobile-doctor-demo.gif" alt="App demo" width="50%">
+## ✨ 주요 기능
 
-## Features
-- 근거리 병원 검색: 반경, 전문과 필터
-- 진료 기록 요약, 즐겨찾기, 오프라인 조회
-- 요청 큐 + 지수 백오프 리트라이, 서킷 브레이커
-- 민감 데이터 암호화, 지표 기반 모니터링
+  - **지도 기반 병원/약국 검색**: `Google Maps/Places SDK`를 활용하여 사용자 주변의 병원과 약국을 검색하고, 커스텀 마커와 영업 상태 아이콘으로 시각화합니다.
+  - **증상별 의약품 검색**: `RecyclerView`와 필터 기능을 이용해 증상에 맞는 의약품 목록을 검색하고 상세 정보를 확인할 수 있습니다.
+  - **병원 이용 기록 관리**: `SQLite` 로컬 데이터베이스에 사용자의 진단명, 증상, 비용 등 병원 방문 기록을 저장하고 조회합니다.
+  - **접근성**: 모든 화면에 일관되게 적용되는 글자 크기 확대 토글 기능과, 홈 화면의 밝기 조절 슬라이더를 제공합니다.
+  - **홈 피드 건강 코멘트**: 사용자의 최근 병원 방문 빈도를 분석하여, 홈 화면에 개인화된 건강 관련 문구를 노출합니다.
 
-## Architecture
-- Presentation: Activity/Fragment + ViewModel + ViewBinding
-- Data: Repository + Local(오프라인 캐시) + Remote(API)
-- Reliability: Retry with backoff, Circuit Breaker, Request Queue
-- Security: 암호화 저장소(예: EncryptedSharedPreferences)
+-----
 
-## Getting Started
-1. Android Studio 최신 버전 설치
-2. Clone
-   - git clone <repo-url>
-3. Open and Run
-   - app 모듈 실행
-4. 환경 변수
-   - local.properties 또는 BuildConfig로 API 키 주입
+## 🛠️ 기술 스택 및 아키텍처
 
-## Example (Retry + Backoff)
-```kotlin
-suspend fun <T> retryWithBackoff(
-    max: Int = 3,
-    baseMs: Long = 300L,
-    block: suspend () -> T
-): T {
-    var attempt = 0
-    var delayMs = baseMs
-    while (true) {
-        try { return block() }
-        catch (e: IOException) { /* 네트워크 등 일시 오류 */ }
-        if (++attempt >= max) throw e
-        delay(delayMs)
-        delayMs *= 2 // 지수 백오프
-    }
-}
+| 구분 | 기술 |
+| :--- | :--- |
+| **언어/환경** | `Java`, `Android Studio`, `Gradle (KTS)` |
+| **UI** | `AndroidX AppCompat`, `Material Components`, `RecyclerView`, `XML Layout` |
+| **지도/위치** | `Google Maps SDK`, `Google Places SDK`, `FusedLocationProvider` |
+| **데이터** | `SQLite` (로컬 DB), `SharedPreferences` (설정 저장) |
+| **네트워킹** | `OkHttp` (Google Places API 통신) |
+| **아키텍처**| `BaseActivity`를 통한 공통 기능 상속, `Adapter`/`ViewHolder` 패턴 |
+
+-----
+
+## 🚀 빌드 및 실행
+
+1.  Android Studio에서 프로젝트를 엽니다.
+2.  `local.properties` 또는 `gradle.properties` 파일에 Google Maps/Places API 키를 설정합니다.
+    ```properties
+    MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
+    PLACES_API_KEY=YOUR_GOOGLE_PLACES_API_KEY
+    ```
+3.  Gradle Sync를 실행한 후, 에뮬레이터 또는 실제 기기에서 앱을 실행합니다.
+
+-----
+
+## 🔐 필요 권한 (`AndroidManifest.xml`)
+
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 ```
 
-## Offline Cache
-- Room/SQLite로 최근 검색 결과와 즐겨찾기 저장
-- 캐시 만료 정책과 동기화 트리거 분리
+-----
 
-## Folder Structure
-```
-/assets/                        # README 이미지 (mobile-doctor-demo.gif 등)
-/app/src/main/java/...         # 소스
-/app/src/main/res/...          # 레이아웃/리소스
-README.md
-```
+## 🖼️ 데모
 
-## Checklist
-- [ ] 위치 권한/정밀도 설정 가이던스
-- [ ] 오프라인 캐시 만료·동기화 정책 문서화
-- [ ] 에러 코드별 리트라이/중단 규칙 분리
-- [ ] 암호화 저장·전송(HTTPS/Pinning 옵션) 점검
-- [ ] UI 스레드 규칙·린트·테스트 통과
+\<img src="assets/mobile-doctor-demo.gif" alt="App Demo GIF"/\>
 
-## Troubleshooting
-- 위치 값 튀는 현상: 센서 융합 파라미터/필터 조정
-- 쿼터 초과: 서버 응답 코드별 쿼터 대기 + 사용자 알림
-- 느린 시작: 캐시 프리워밍 및 비동기 초기화
+-----
 
-## Links
-- Notion Page: Mobile Doctor App[[1]](https://www.notion.so/f8e8f6e415dd40f795f80c830003c1c4)
-- GitHub Repo: https://github.com/jihun-moon/mobile-doctor-app
+## 🗺️ 로드맵 (향후 개발 계획)
 
-## License
-MIT 또는 프로젝트 정책에 맞는 라이선스 명시
+  - [ ] **아키텍처 개선**: Room 라이브러리로 DB 마이그레이션, ViewModel + LiveData 도입
+  - [ ] **기능 확장**: Retrofit을 이용한 공공데이터포털 의약품 API 연동
+  - [ ] **사용성 개선**: 다크 모드 지원, 지도 오프라인 캐시 기능 추가
+  - [ ] **코드 품질**: UI 테스트(Espresso) 및 단위 테스트(JUnit) 코드 작성
+
+-----
+
+## 🪪 라이선스
+
+이 프로젝트는 [MIT 라이선스](https://opensource.org/licenses/MIT)를 따릅니다.
