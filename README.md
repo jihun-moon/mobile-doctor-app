@@ -28,7 +28,7 @@ Android Studio로 열고 Run 버튼을 클릭하여 실행합니다.
 
 
 
-## 🖼️ 스크린샷
+## 🖼️ 데모영상
 
 <img src="assets/mobile-doctor-demo.gif" alt="앱 시작 스플래시 화면" width="350"/>
 
