@@ -22,15 +22,8 @@ Android Studio로 열고 Run 버튼을 클릭하여 실행합니다.
 
 ## 🖼️ 스크린샷
 
-\<img src="assets/0.gif" alt="Mobile Doctor loding" width="350"/\>
+\<img src="assets/0.gif" alt="앱 시작 스플래시 화면" width="350"/\>
 
 ## 📄 라이선스
 
 이 프로젝트는 MIT 라이선스를 따릅니다.
-
------
-
-### **설명** 📝
-
-  - **크기 조절:** 일반적인 Markdown 이미지 형식 `![alt](src)` 대신 HTML `<img>` 태그를 사용했습니다.
-  - `width="350"` 부분의 숫자 **350**을 원하는 크기로 조절하여 GIF의 너비를 쉽게 변경할 수 있습니다.
