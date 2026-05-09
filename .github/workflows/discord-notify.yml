@@ -14,7 +14,6 @@ permissions:
 jobs:
   notify:
     runs-on: ubuntu-latest
-    if: ${{ secrets.DISCORD_WEBHOOK != '' }}
     steps:
       - name: Send Discord notification
         env:
@@ -25,6 +24,10 @@ jobs:
           REF: ${{ github.ref_name }}
           URL: ${{ github.event.compare || github.event.release.html_url || github.event.pull_request.html_url || github.event.repository.html_url }}
         run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "DISCORD_WEBHOOK secret not set — skipping (configure in repo Settings → Secrets to enable)."
+            exit 0
+          fi
           MSG="**[$REPO]** \`$EVENT\` on \`$REF\` by **$ACTOR**\n$URL"
           curl -fsSL -H "Content-Type: application/json" \
             -d "{\"content\": \"$MSG\"}" \
