@@ -1,17 +1,25 @@
-# Security Policy
+# 보안 정책
 
-## Reporting a Vulnerability
+## 취약점 신고
 
-If you discover a security vulnerability in this project, **please do not open a public issue**. Instead, contact the maintainer directly:
+이 저장소에서 보안 문제를 찾으셨다면 **공개 이슈로 올리지 말고** 아래로 연락 주세요.
 
-- **Email**: jihun0948@naver.com
+- 메일 jihun0948@naver.com
 
-Please include:
-- A description of the issue
-- Steps to reproduce (or a proof-of-concept)
-- The version / commit affected
-- Your assessment of the impact
+같이 적어 주시면 확인이 빠릅니다.
 
-You can expect an initial response within 7 days. If the report is confirmed as a vulnerability, a coordinated disclosure timeline will be agreed.
+- 어떤 문제인지
+- 재현 순서 또는 PoC
+- 해당 커밋이나 버전
+- 영향 범위에 대한 판단
 
-Thank you for helping keep this project safe.
+7일 안에 첫 답을 드리고, 확인되면 수정 후 공개 시점을 함께 정하겠습니다.
+
+## 이 저장소에서 특히 조심하는 것
+
+의료 정보를 다루는 학습용 안드로이드 앱입니다.
+
+- 로컬 DB 에 진료 기록이 평문으로 남는 경로
+- 로그캣에 개인정보가 찍히는 경우
+
+실제 환자 데이터는 쓰지 않았고 전부 만들어 낸 값입니다.
