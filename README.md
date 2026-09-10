@@ -1,6 +1,7 @@
 # Mobile Doctor
 
-주변 병원과 약국을 지도에서 찾고, 증상으로 검색하고, 가지고 있는 약과 진료 이력을 관리하는 안드로이드 앱입니다.
+주변 병원과 약국을 지도에서 찾고, 증상으로 약을 검색하고, 진료 이력을 기록하는 안드로이드 앱입니다.
+2인 팀 과제였고(2025-05 ~ 06), 저는 화면 뼈대(Splash, BaseActivity)와 지도 검색(Google Maps/Places API), 증상 검색, 돋보기·밝기 기능을 맡았습니다.
 
 <p>
   <img src="https://img.shields.io/badge/Android-3DDC84?style=flat-square&logo=android&logoColor=white"/>
@@ -33,11 +34,10 @@ SplashActivity
      ▼
 MainActivity
      ├──▶ MapActivity              지도에서 병원/약국 찾기
-     ├──▶ SymptomSearchActivity    증상으로 검색
-     ├──▶ HospitalHistoryActivity  진료 이력
-     └──▶ InventoryActivity        보유 약 관리
-                │
-                └──▶ FullscreenImageActivity   약 사진 크게 보기
+     │        └──▶ InventoryActivity         약국 재고 (예시 데이터)
+     ├──▶ SymptomSearchActivity    증상으로 약 검색
+     │        └──▶ FullscreenImageActivity   약 사진 크게 보기
+     └──▶ HospitalHistoryActivity  진료 이력
 ```
 
 `BaseActivity` 가 공통 처리를 담고 나머지가 이걸 상속합니다.
@@ -70,6 +70,7 @@ MainActivity
 | `ic_hospital_closed` / `ic_pharmacy_closed` | 영업 종료 |
 | `ic_hospital_unknown` / `ic_pharmacy_unknown` | 영업 정보 없음 |
 
+영업 여부는 Google Places 주변 검색 응답의 `opening_hours.open_now` 로 나눕니다. `opening_hours` 가 아예 없으면 unknown 입니다.
 unknown 을 따로 둔 이유는, 정보가 없는 곳을 닫힌 것으로 표시하면 갈 수 있는 병원을 놓치기 때문입니다.
 모른다는 걸 모른다고 보여 주는 편이 낫다고 봤습니다.
 
@@ -80,7 +81,7 @@ unknown 을 따로 둔 이유는, 정보가 없는 곳을 닫힌 것으로 표�
 `res/drawable` 에 약 사진 40여 장이 들어 있습니다. 아스피린, 이부프로펜, 알프라졸람, 카르베딜롤, 겔포스,
 디곡신 같은 식으로 파일명을 성분이나 제품명으로 붙였습니다.
 
-인벤토리에서 약 카드를 누르면 `FullscreenImageActivity` 로 넘어가서 크게 볼 수 있습니다.
+증상 검색 결과에서 약 사진을 누르면 `FullscreenImageActivity` 로 넘어가서 크게 보여 줍니다.
 글자로만 있으면 집에 있는 약이 그 약인지 확인이 안 돼서 넣었습니다.
 
 이미지가 앱 안에 박혀 있어서 약을 추가하려면 앱을 다시 빌드해야 합니다. 이것도 서버에서 받아 오게 바꿔야 하는 부분입니다.
@@ -89,7 +90,7 @@ unknown 을 따로 둔 이유는, 정보가 없는 곳을 닫힌 것으로 표�
 
 ## 5. 지금 알고 있는 문제
 
-**`WRITE_SETTINGS` 권한이 남아 있습니다.**
+**밝기 슬라이더가 `WRITE_SETTINGS` 로 시스템 밝기를 바꿉니다.**
 
 `AndroidManifest.xml` 에 선언된 권한은 네 개입니다.
 
@@ -100,8 +101,9 @@ ACCESS_COARSE_LOCATION
 WRITE_SETTINGS
 ```
 
-앞의 셋은 지도와 위치에 필요합니다. `WRITE_SETTINGS` 는 시스템 설정을 바꾸는 권한이라
-이 앱에 필요가 없습니다. 개발 중에 밝기를 조절해 보려고 넣었다가 안 지운 것입니다.
+앞의 셋은 지도와 위치에 필요합니다. `WRITE_SETTINGS` 는 메인 화면의 밝기 슬라이더가 씁니다.
+슬라이더가 `Settings.System.SCREEN_BRIGHTNESS` 를 직접 고치고, 권한이 없으면 메인 화면에 들어가자마자 시스템 설정 권한 화면이 뜹니다.
+앱 창 밝기만 바꾸는 `WindowManager.LayoutParams.screenBrightness` 를 썼으면 이 권한이 필요 없었습니다.
 의료 정보를 다루는 앱이 필요 없는 시스템 권한을 들고 있으면 그 자체가 문제라
 지우는 게 맞습니다.
 
@@ -145,6 +147,12 @@ src/app/
 <br/>
 
 ## 7. 실행
+
+저장소만 받아서는 빌드되지 않습니다. 키가 든 파일과 Gradle 설정을 `.gitignore` 로 뺐습니다. 아래 셋을 먼저 만듭니다.
+
+- `src/gradle/libs.versions.toml` : `libs.appcompat` 같은 버전 카탈로그와 `android.application` 플러그인
+- `src/gradle.properties` : `MAPS_API_KEY`, `PLACES_API_KEY` (Google Maps SDK, Places API 키)
+- `src/app/src/main/res/values/strings.xml` : `app_name`, `PLACES_API_KEY`, `symptom_prompt`, `category_prompt`, `medicine_image`
 
 1. Android Studio 에서 `src/` 를 프로젝트로 엽니다
 2. Sync Project with Gradle Files
