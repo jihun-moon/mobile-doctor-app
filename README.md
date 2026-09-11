@@ -13,7 +13,8 @@
   <a href="https://www.notion.so/Mobile-Doctor-Android-93f528f91dae4711bd7f2ae923edce6f?source=copy_link"><img src="https://img.shields.io/badge/회고-Notion-000000?style=flat-square&logo=notion&logoColor=white"/></a>
 </p>
 
-<p><img src="assets/mobile-doctor-demo.gif" alt="시연" width="32%"></p>
+<p><img src="assets/mobile-doctor-demo.gif" alt="시연" width="32%"><br>
+<sub>mp4 720x1760 · 20fps · <a href="assets/mobile-doctor-demo.mp4">시연 영상</a></sub></p>
 
 <br/>
 
