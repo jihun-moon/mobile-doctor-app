@@ -283,7 +283,7 @@ public class SymptomSearchActivity extends BaseActivity {
                         result.getLastLocation().getLongitude()
 
                 );
-                Log.d(TAG, "🔄 위치 업데이트: "
+                Log.d(TAG, "위치 업데이트: "
                         + currentLocation.latitude + ", "
                         + currentLocation.longitude);
             }
@@ -519,10 +519,10 @@ public class SymptomSearchActivity extends BaseActivity {
             vh.usage.setText("복용법: " + m.getUsage());
             vh.price.setText("가격: " + m.getPrice());
 
-            // 📌 이미지 바인딩 추가
+            // 이미지 바인딩 추가
             vh.image.setImageResource(m.getImageResId());
 
-            // ★ 여기에 클릭 리스너 추가
+            // 여기에 클릭 리스너 추가
             vh.image.setOnClickListener(v -> {
                 Context ctx = v.getContext();
                 Intent i = new Intent(ctx, FullscreenImageActivity.class);

@@ -193,7 +193,7 @@ public class MapActivity extends BaseActivity
                 if (result == null) return;
                 Location loc = result.getLastLocation();
                 currentLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
-                Log.d(TAG, "🔄 위치 업데이트: "
+                Log.d(TAG, "위치 업데이트: "
                         + currentLocation.latitude + ", "
                         + currentLocation.longitude);
             }
